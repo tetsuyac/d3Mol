@@ -22,3 +22,8 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+#root {
+    width: 90%;
+    margin: 0 auto;
+    background-color: ghostwhite;
+}

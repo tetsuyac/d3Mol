@@ -6,7 +6,8 @@
     "d3": "^3.0.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
-    "react-fetch": "0.0.9"
+    "react-grid-layout": "^0.14.6",
+    "react-resizable": "^1.6.0"
   },
   "devDependencies": {
     "react-scripts": "0.9.5"
