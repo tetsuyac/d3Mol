@@ -4,8 +4,7 @@ rev 0.1    04/24/2017: mol graphs in draggable panes
 rev 0.init 04/18/2017: mol graph
 ```
 ## steps to run
-1. download caseManager.zip from https://github.com/tetsuyac/d3Mol.git
-1. unzip d3Mol.zip
+1. git clone https://github.com/tetsuyac/d3Mol.git d3Mol
 1. cd d3Mol
 1. npm install
 1. npm start
