@@ -23,7 +23,7 @@
   to { transform: rotate(360deg); }
 }
 #root {
-    width: 90%;
+    width: 99%;
     margin: 0 auto;
     background-color: ghostwhite;
 }

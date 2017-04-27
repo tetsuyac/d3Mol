@@ -1,6 +1,7 @@
 # d3Mol - React D3 molecule
 ```
-rev 0.1    04/24/2017: mol graphs in draggable panes
+rev 0.2    04/26 : mol graphs responsive to panes
+rev 0.1    04/24 : mol graphs in draggable panes
 rev 0.init 04/18/2017: mol graph
 ```
 ## steps to run

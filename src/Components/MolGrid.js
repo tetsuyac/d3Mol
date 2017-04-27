@@ -10,12 +10,12 @@ export default class MolGrid extends Component {
     super(props)
     this.state = {resized:false}
     this.layout = [
-      {i: 'a', x: 0, y: 0, w: 1, h: 1, maxW: 4, maxH: 4, isResizable: false},
-      {i: 'b', x: 1, y: 0, w: 2, h: 2, maxW: 4, maxH: 4, isResizable: false},
-      {i: 'c', x: 2, y: 0, w: 2, h: 2, maxW: 4, maxH: 4, isResizable: false},
-      {i: 'd', x: 4, y: 0, w: 3, h: 3, maxW: 4, maxH: 4, isResizable: false},
-      {i: 'e', x: 1, y: 1, w: 1, h: 1, maxW: 4, maxH: 4, isResizable: false},
-      {i: 'f', x: 1, y: 2, w: 3, h: 3, maxW: 4, maxH: 4, isResizable: false}
+      {i: 'a', x:  0, y: 0, w: 4, h: 4, maxW: 4, maxH: 4, isResizable: false},
+      {i: 'b', x:  4, y: 0, w: 2, h: 2, maxW: 4, maxH: 4, isResizable: false},
+      {i: 'c', x:  6, y: 0, w: 3, h: 3, maxW: 4, maxH: 4, isResizable: false},
+      {i: 'd', x:  4, y: 2, w: 1, h: 1, maxW: 4, maxH: 4, isResizable: false},
+      {i: 'e', x:  0, y: 4, w: 5, h: 5, maxW: 5, maxH: 5, isResizable: false},
+      {i: 'f', x:  5, y: 4, w: 12, h: 12, maxW: 12, maxH: 12, isResizable: false}
     ];
     this.resized = this.resized.bind(this)
     this.molGridStyle = molGridStyle

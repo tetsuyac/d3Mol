@@ -5,30 +5,33 @@ import d3 from 'd3'
 export default class D3Mol extends Component {
   constructor(props) {
     super(props)
-    this.store = {myId: props.myId, graphReady:false}
+    this.store = {myId: props.myId, graphReady: false}
     this.me = this
     this.updateDimensions = this.updateDimensions.bind(this)
   }
 
-  updateDimensions () {
+  updateDimensions() {
     this.props.resized(true)
   }
-  componentWillMount () {
+
+  componentWillMount() {
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
   }
 
   componentDidMount() {
 //    var el = ReactDOM.findDOMNode(window.document.getElementById(this.props.myId))
-//    el.addEventListener("resize", this.updateDimensions)
+//    el.addEventListener('resize', this.updateDimensions)
     this.getGraph(this.props)
   }
 
   componentWillUpdate(nextProps, nextState) {
-    var el = ReactDOM.findDOMNode(window.document.getElementById(nextProps.myId))
-    this.store["width"] = window.getComputedStyle(ReactDOM.findDOMNode(el)).getPropertyValue("width")
-    this.store["height"] = window.getComputedStyle(ReactDOM.findDOMNode(el)).getPropertyValue("height")
+    var rt = ReactDOM.findDOMNode(window.document.getElementById('root')),
+      el = ReactDOM.findDOMNode(window.document.getElementById(nextProps.myId))
+    this.store['width'] = el.clientWidth
+    this.store['height'] = el.clientHeight
+    this.store['ratio'] = Math.min(el.clientWidth / rt.clientWidth, el.clientHeight / rt.clientHeight)
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -36,7 +39,7 @@ export default class D3Mol extends Component {
 
   getGraph(props) {
     var me = this.me, ct = 1
-    fetch("graph.json")
+    fetch('graph.json')
       .then(response => response.json())
       .then(json => {
         var graph = putGraph()
@@ -44,10 +47,10 @@ export default class D3Mol extends Component {
           if (!--ct) {
             clearInterval(td)
           }
-          me.store["graph"] = graph.next().value
-          me.store["graphReady"] = true
+          me.store['graph'] = graph.next().value
+          me.store['graphReady'] = true
           me.forceUpdate()
-          console.log("getGraph graphReady: " + me.props.myId)
+          console.log('getGraph graphReady: ' + me.props.myId)
         }, 2000)
 
         function* putGraph() {
@@ -72,11 +75,11 @@ export default class D3Mol extends Component {
   }
 
   renderLoading() {
-    return <div className="status">Loading Graph Data...</div>
+    return <div className='status'>Loading Graph Data...</div>
   }
 
   renderProcessing() {
-    return <div className="status">Processing Graph Data...</div>
+    return <div className='status'>Processing Graph Data...</div>
   }
 
   renderError() {
@@ -88,21 +91,21 @@ export default class D3Mol extends Component {
   }
 
   d3Mol() {
-    var width = parseInt(this.store.width,10), height = parseInt(this.store.height,10)
+    var width = parseInt(this.store.width, 10), height = parseInt(this.store.height, 10),
+      _radix = 10, _range = 24, _ratio = this.store.ratio,
+      color = d3.scale.category20(), sel = `div[id=${this.props.myId}]`
 
-    console.log(`width: ${width} height: ${height}`)
+    function radius(size) { // refined ratio modulation
+      return (d3.scale.sqrt().domain([0, 12 * _radix]).range([0, _range]))(Math.ceil(size * _radix * _ratio))
+    }
 
-    var pane = Math.ceil(Math.min(width, height) / 4), draw = Math.ceil(pane / 4)
-    var color = d3.scale.category20(), radius = d3.scale.sqrt().domain([0,pane]).range([0, draw])
-    var sel = 'div[id="' + this.props.myId + '"]'
-
-    console.log(`sel: ${sel}`)
+    console.log(`width: ${width} height: ${height} sel: ${sel}`)
 
     var svg = d3.select(sel).append('svg').attr('width', width).attr('height', height)
 
-    var force = d3.layout.force().size([width, height]).charge(-400).linkDistance(function (d) {
-        return radius(d.source.size) + radius(d.target.size) + 20
-      })
+    var force = d3.layout.force().size([width, height]).charge(Math.ceil(-1000 * _ratio)).linkDistance(function (d) {
+      return radius(d.source.size) + radius(d.target.size)
+    })
 
     force.nodes(this.store.graph.nodes).links(this.store.graph.links).on('tick', tick).start()
 
