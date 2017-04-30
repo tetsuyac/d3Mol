@@ -1,28 +1,95 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import d3 from 'd3'
+import ResizeDetector from 'react-resize-detector'
+import d3MolStyle from './D3Mol.css'
+
+const EventListenerMode = {capture: false}
 
 export default class D3Mol extends Component {
   constructor(props) {
     super(props)
-    this.store = {myId: props.myId, graphReady: false}
+    this.store = {myId: props.myId, me: null, svg: null, graphReady: false, molRim: undefined, isDragOn: false}
+    this.getStore = () => {
+      return Object.assign({}, this.store)
+    }
     this.me = this
-    this.updateDimensions = this.updateDimensions.bind(this)
+    this.d3MolStyle = d3MolStyle
   }
 
-  updateDimensions() {
-    this.props.resized(true)
+  handleResize = (width, height) => { // dom native scheme
+    if (typeof this.store !== 'undefined') {
+      if (typeof this.store.molRim !== 'undefined') {
+        this.store.width = width
+        this.store.height = height
+        this.forceUpdate()
+      }
+    }
   }
 
-  componentWillMount() {
+  callGetStore = () => {
+    return this.getStore()
   }
 
-  componentWillUnmount() {
+  handleResiseWrapper = (width, height) => {
+    this.handleResize(width, height)
+  }
+
+  mousedownListener = (e) => {
+    if (this.isGraphElement(e)) {
+      this.store.me.focus()
+      this.captureMouseEvents(e)
+      console.log('down')
+    }
+  }
+
+  captureMouseEvents(e) {
+    this.preventGlobalMouseEvents()
+    this.store.me.addEventListener('mousemove', this.mousemoveListener, EventListenerMode)
+    document.addEventListener('mouseup', this.mouseupListener, EventListenerMode)
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  mousemoveListener = (e) => {
+    e.stopPropagation()
+    // do whatever is needed while the user is moving the cursor around
+    console.log('move')
+  }
+
+  mouseupListener = (e) => {
+//    if (this.isGraphElement(e)) {
+    this.store.me.blur()
+    this.releaseMouseEvents(e)
+    console.log('up')
+//    }
+  }
+
+  releaseMouseEvents(e) {
+    this.restoreGlobalMouseEvents()
+    this.store.me.removeEventListener('mousemove', this.mousemoveListener, EventListenerMode)
+    document.removeEventListener('mouseup', this.mouseupListener, EventListenerMode)
+    e.stopPropagation()
+  }
+
+  isGraphElement(e) {
+    var el = e.target.tagName
+    return el === 'circle'
+  }
+
+  preventGlobalMouseEvents() {
+    document.body.style['pointer-events'] = 'none'
+  }
+
+  restoreGlobalMouseEvents() {
+    document.body.style['pointer-events'] = 'auto'
   }
 
   componentDidMount() {
-//    var el = ReactDOM.findDOMNode(window.document.getElementById(this.props.myId))
-//    el.addEventListener('resize', this.updateDimensions)
+    this.store.me = ReactDOM.findDOMNode(this)
+    this.store.molRim = document.getElementById(this.store.myId)
+    this.store.molPane = document.querySelector(`div[id=${this.props.myId}]`).querySelector('.molPane')
+    this.store.me.addEventListener('mousedown', e => this.mousedownListener(e))
     this.getGraph(this.props)
   }
 
@@ -34,7 +101,13 @@ export default class D3Mol extends Component {
     this.store['ratio'] = Math.min(el.clientWidth / rt.clientWidth, el.clientHeight / rt.clientHeight)
   }
 
+  componentWillMount() {
+  }
+
   componentDidUpdate(prevProps, prevState) {
+  }
+
+  componentWillUnmount() {
   }
 
   getGraph(props) {
@@ -69,8 +142,10 @@ export default class D3Mol extends Component {
       }
     }
     return (
-      null
-//      <ResizeDetector handleWidth handleHeight onResize={this.updateDimensions}/>
+      <div className='molPeri'>
+        <div className='molPane'/>
+        <ResizeDetector handleWidth handleHeight onResize={this.handleResiseWrapper}/>
+      </div>
     )
   }
 
@@ -93,23 +168,32 @@ export default class D3Mol extends Component {
   d3Mol() {
     var width = parseInt(this.store.width, 10), height = parseInt(this.store.height, 10),
       _radix = 10, _range = 24, _ratio = this.store.ratio,
-      color = d3.scale.category20(), sel = `div[id=${this.props.myId}]`
+      color = d3.scale.category20()
 
-    function radius(size) { // refined ratio modulation
-      return (d3.scale.sqrt().domain([0, 12 * _radix]).range([0, _range]))(Math.ceil(size * _radix * _ratio))
+    console.log(`width: ${width} height: ${height}`)
+
+    if (this.store.svg) {
+      this.store.molPane.removeChild(this.store.svg[0][0])
     }
-
-    console.log(`width: ${width} height: ${height} sel: ${sel}`)
-
-    var svg = d3.select(sel).append('svg').attr('width', width).attr('height', height)
+    this.store.svg = d3.select(this.store.molPane).append('svg')
+    this.store.svg.attr('width', '100%').attr('height', '100%')
 
     var force = d3.layout.force().size([width, height]).charge(Math.ceil(-1000 * _ratio)).linkDistance(function (d) {
       return radius(d.source.size) + radius(d.target.size)
-    })
+    });
+
+    var o = adjustWH({width, height})
+    width = o.width
+    height = o.height
+
+    function adjustWH(o) {
+//      o.width < o.height ?
+      return o
+    }
 
     force.nodes(this.store.graph.nodes).links(this.store.graph.links).on('tick', tick).start()
 
-    var link = svg.selectAll('.link').data(this.store.graph.links).enter().append('g').attr('class', 'link')
+    var link = this.store.svg.selectAll('.link').data(this.store.graph.links).enter().append('g').attr('class', 'link')
 
     link.append('line').style('stroke-width', function (d) {
       return (d.bond * 2 - 1) * 2 + 'px'
@@ -119,7 +203,7 @@ export default class D3Mol extends Component {
       return d.bond > 1
     }).append('line').attr('class', 'separator')
 
-    var node = svg.selectAll('.node').data(this.store.graph.nodes).enter().append('g').attr('class', 'node').call(force.drag)
+    var node = this.store.svg.selectAll('.node').data(this.store.graph.nodes).enter().append('g').attr('class', 'node').call(force.drag)
 
     node.append('circle').attr('r', function (d) {
       return radius(d.size)
@@ -144,5 +228,10 @@ export default class D3Mol extends Component {
         return 'translate(' + d.x + ',' + d.y + ')'
       })
     }
+
+    function radius(size) { // refined ratio modulation
+      return (d3.scale.sqrt().domain([0, 12 * _radix]).range([0, _range]))(Math.ceil(size * _radix * _ratio))
+    }
+
   }
 }
