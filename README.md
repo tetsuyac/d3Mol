@@ -1,10 +1,14 @@
 # d3Mol - React D3 molecule
 ```
+rev 0.4    04/30 : window resize, Mol Specs panel init
 rev 0.3    04/29 : mol pane resizable, hosting at guthub.io
 rev 0.2    04/26 : mol graph responsive in pane
 rev 0.1    04/24 : mol graphs in draggable panes
 rev 0.init 04/18/2017: mol graph
 ```
+
+
+[DEMO](https://tetsuyac.github.io/d3Mol)
 
 ## memo
 1. **[pane drag]** *react-grid-layout* natively supports this feature.
@@ -26,9 +30,10 @@ rev 0.init 04/18/2017: mol graph
    another select was made on other graph running in other pane. working
    on it.
 
-1. **[window resize]** not yet
+1. **[window resize]** *react-grid-layout* Responsive is still in old way
+   not supporting es6 class so, MolGrid.js is converted to es5 (createClass).
 
-1. **[graph spec string input/load]** not yet
+1. **[graph spec string input/load]** rev0.4 panel init
 
 1. **[gradual grow of graph in steps]** not yet
 

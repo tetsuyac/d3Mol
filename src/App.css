@@ -22,8 +22,23 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+#d3Mol {
+    display:flex;
+    flex-direction:row;
+}
+#d3Mol #molGrid {
+    flex:5;
+}
+#d3Mol #molSpec {
+    flex:1;
+}
 #root {
     width: 99%;
     margin: 0 auto;
+    margin-top:2rem;
     background-color: ghostwhite;
+}
+
+#molGrid, #molSpec {
+    margin:0.4rem 0 0 0;
 }

@@ -2,11 +2,12 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import d3 from 'd3'
 import ResizeDetector from 'react-resize-detector'
+import D3MolOutsideEventContainer from 'react-outside-event'
 import d3MolStyle from './D3Mol.css'
 
 const EventListenerMode = {capture: false}
 
-export default class D3Mol extends Component {
+class D3Mol extends Component {
   constructor(props) {
     super(props)
     this.store = {myId: props.myId, me: null, svg: null, graphReady: false, molRim: undefined, isDragOn: false}
@@ -17,6 +18,13 @@ export default class D3Mol extends Component {
     this.d3MolStyle = d3MolStyle
   }
 
+  onOutsideEvent = (event) => {
+    if (event.type === 'mousedown') {
+      console.log('mousedown')
+    } else if (event.type === 'mouseup') {
+      console.log('mousep')
+    }
+  }
   handleResize = (width, height) => { // dom native scheme
     if (typeof this.store !== 'undefined') {
       if (typeof this.store.molRim !== 'undefined') {
@@ -235,3 +243,4 @@ export default class D3Mol extends Component {
 
   }
 }
+export default D3MolOutsideEventContainer(D3Mol, ['mousedown', 'mouseup'])

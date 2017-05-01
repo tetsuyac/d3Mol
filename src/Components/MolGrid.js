@@ -1,47 +1,82 @@
-import React, {Component} from 'react'
-import ReactDOM from 'react-dom'
-import MolGridContainer from 'react-grid-layout'
+import React from 'react'
+import PureRenderMixin from 'react/lib/ReactComponentWithPureRenderMixin'
+import {Responsive} from 'react-grid-layout'
+var WidthProvider = require('react-grid-layout').WidthProvider
+var ResponsiveReactGridLayout = WidthProvider(Responsive)
 import D3Mol from './D3Mol'
 import gridStyle from 'react-grid-layout/css/styles.css'
 import resizableStyle from 'react-resizable/css/styles.css'
 import molGridStyle from './MolGrid.css'
 
-export default class MolGrid extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
-    this.layout = [
-      {i: 'a', x: 0, y: 0, w: 4, h: 4, maxW: 4, maxH: 4},
-      {i: 'b', x: 4, y: 0, w: 2, h: 2, maxW: 4, maxH: 4},
-      {i: 'c', x: 6, y: 0, w: 3, h: 3, maxW: 4, maxH: 4},
-      {i: 'd', x: 4, y: 2, w: 1, h: 1, maxW: 4, maxH: 4},
-      {i: 'e', x: 0, y: 4, w: 5, h: 5, maxW: 5, maxH: 5},
-      {i: 'f', x: 5, y: 4, w: 12, h: 12, maxW: 12, maxH: 12}
-    ]
-    this.breakpoints = {lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}
-    this.cols =        {lg:   12, md:  10, sm:   6, xs:   4, xxs: 2}
+const originalLayouts = getFromLS('layouts') || {};
+var MolGrid = React.createClass({
+  mixins: [PureRenderMixin],
+  gridStyle: gridStyle,
+  resizableStyle: resizableStyle,
+  molGridStyle: molGridStyle,
+  getDefaultProps() {
+    return {
+      className: "layout",
+      cols: {lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
+      rowHeight: 100,
+      onLayoutChange: function () {
+      }
+    }
+  },
 
-    this.gridStyle = gridStyle
-    this.resizableStyle = resizableStyle
-    this.molGridStyle = molGridStyle
-  }
+  getInitialState() {
+    return {
+      layouts: JSON.parse(JSON.stringify(originalLayouts))
+    };
+  },
 
-  componentDidMount() {
-    this.setState({molGrid: ReactDOM.findDOMNode(this)})
-  }
+  resetLayout() {
+    this.setState({layouts: {}});
+  },
+
+  onLayoutChange(layout, layouts) {
+    saveToLS('layouts', layouts);
+    this.setState({layouts});
+    this.props.onLayoutChange(layout, layouts);
+  },
 
   render() {
     return (
       <div id="molGrid">
-        <MolGridContainer className="layout" layout={this.layout} cols={12} rowHeight={100} width={1200}>
-          <div key={'a'} id={'a'}><D3Mol myId={'a'} molGrid={this.state.molGrid}></D3Mol></div>
-          <div key={'b'} id={'b'}><D3Mol myId={'b'} molGrid={this.state.molGrid}></D3Mol></div>
-          <div key={'c'} id={'c'}><D3Mol myId={'c'} molGrid={this.state.molGrid}></D3Mol></div>
-          <div key={'d'} id={'d'}><D3Mol myId={'d'} molGrid={this.state.molGrid}></D3Mol></div>
-          <div key={'e'} id={'e'}><D3Mol myId={'e'} molGrid={this.state.molGrid}></D3Mol></div>
-          <div key={'f'} id={'f'}><D3Mol myId={'f'} molGrid={this.state.molGrid}></D3Mol></div>
-        </MolGridContainer>
+        <button onClick={this.resetLayout}>Reset Layout</button>
+        <ResponsiveReactGridLayout
+          ref="rrgl"
+          {...this.props}
+          layouts={this.state.layouts}
+          onLayoutChange={this.onLayoutChange}>
+          <div key={'a'} id={'a'} data-grid={{i: 'a', x: 0, y: 0, w: 1, h: 1}}><D3Mol myId={'a'}></D3Mol></div>
+          <div key={'b'} id={'b'} data-grid={{i: 'b', x: 1, y: 1, w: 1, h: 1}}><D3Mol myId={'b'}></D3Mol></div>
+          <div key={'c'} id={'c'} data-grid={{i: 'c', x: 2, y: 0, w: 1, h: 1}}><D3Mol myId={'c'}></D3Mol></div>
+          <div key={'d'} id={'d'} data-grid={{i: 'd', x: 3, y: 1, w: 2, h: 1}}><D3Mol myId={'d'}></D3Mol></div>
+          <div key={'e'} id={'e'} data-grid={{i: 'e', x: 0, y: 2, w: 2, h: 2}}><D3Mol myId={'e'}></D3Mol></div>
+          <div key={'f'} id={'f'} data-grid={{i: 'f', x: 2, y: 2, w: 2, h: 2}}><D3Mol myId={'f'}></D3Mol></div>
+        </ResponsiveReactGridLayout>
       </div>
     )
+  }
+})
+export default MolGrid
+
+function getFromLS(key) {
+  let ls = {};
+  if (global.localStorage) {
+    try {
+      ls = JSON.parse(global.localStorage.getItem('rgl-8')) || {};
+    } catch (e) {/*Ignore*/
+    }
+  }
+  return ls[key];
+}
+
+function saveToLS(key, value) {
+  if (global.localStorage) {
+    global.localStorage.setItem('rgl-8', JSON.stringify({
+      [key]: value
+    }));
   }
 }
