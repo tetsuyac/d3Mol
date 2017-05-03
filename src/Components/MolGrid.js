@@ -45,7 +45,6 @@ var MolGrid = React.createClass({
       <div id="molGrid">
         <button onClick={this.resetLayout}>Reset Layout</button>
         <ResponsiveReactGridLayout
-          ref="rrgl"
           {...this.props}
           layouts={this.state.layouts}
           onLayoutChange={this.onLayoutChange}>

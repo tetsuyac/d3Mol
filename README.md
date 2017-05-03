@@ -1,9 +1,10 @@
 # d3Mol - React D3 molecule
 ```
-rev 0.4    04/30 : window resize, Mol Specs panel init
-rev 0.3    04/29 : mol pane resizable, hosting at guthub.io
-rev 0.2    04/26 : mol graph responsive in pane
-rev 0.1    04/24 : mol graphs in draggable panes
+    0.4.1  05/03 : [mouse capture on graph sticks] fixed
+    0.4    04/30 : window resize, Mol Specs panel init
+    0.3    04/29 : mol pane resizable, hosting at guthub.io
+    0.2    04/26 : mol graph responsive in pane
+    0.1    04/24 : mol graphs in draggable panes
 rev 0.init 04/18/2017: mol graph
 ```
 
@@ -25,10 +26,9 @@ rev 0.init 04/18/2017: mol graph
    react object injection was necessary to make it work. other plug-ins
    found just did not work well with responsive svg dom drawing.
 
-1. **[graph drag by select]** graph drag by mouse select is working in
-   limited way where it goes weird state when graph drag release by
-   another select was made on other graph running in other pane. working
-   on it.
+1. **[graph drag by select]** graph drag by mouse select was working in
+   limited way where it went weird state when graph drag release by
+   another select was made on other graph running in other pane. fixed.
 
 1. **[window resize]** *react-grid-layout* Responsive is still in old way
    not supporting es6 class so, MolGrid.js is converted to es5 (createClass).

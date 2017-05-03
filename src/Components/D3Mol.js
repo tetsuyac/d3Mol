@@ -2,14 +2,16 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import d3 from 'd3'
 import ResizeDetector from 'react-resize-detector'
-import D3MolOutsideEventContainer from 'react-outside-event'
 import d3MolStyle from './D3Mol.css'
 
 const EventListenerMode = {capture: false}
 
-class D3Mol extends Component {
+export default class D3Mol extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      isManagingFocus: false,
+    }
     this.store = {myId: props.myId, me: null, svg: null, graphReady: false, molRim: undefined, isDragOn: false}
     this.getStore = () => {
       return Object.assign({}, this.store)
@@ -20,9 +22,9 @@ class D3Mol extends Component {
 
   onOutsideEvent = (event) => {
     if (event.type === 'mousedown') {
-      console.log('mousedown')
+      console.log('down o-ev')
     } else if (event.type === 'mouseup') {
-      console.log('mousep')
+      console.log('up   o-ev')
     }
   }
   handleResize = (width, height) => { // dom native scheme
@@ -46,51 +48,22 @@ class D3Mol extends Component {
   mousedownListener = (e) => {
     if (this.isGraphElement(e)) {
       this.store.me.focus()
-      this.captureMouseEvents(e)
-      console.log('down')
+      this.store.me.addEventListener('mouseup', this.mouseupListener, EventListenerMode)
+      e.preventDefault()
+      e.stopPropagation()
+      console.log('down native')
     }
   }
 
-  captureMouseEvents(e) {
-    this.preventGlobalMouseEvents()
-    this.store.me.addEventListener('mousemove', this.mousemoveListener, EventListenerMode)
-    document.addEventListener('mouseup', this.mouseupListener, EventListenerMode)
-    e.preventDefault()
-    e.stopPropagation()
-  }
-
-  mousemoveListener = (e) => {
-    e.stopPropagation()
-    // do whatever is needed while the user is moving the cursor around
-    console.log('move')
-  }
-
   mouseupListener = (e) => {
-//    if (this.isGraphElement(e)) {
     this.store.me.blur()
-    this.releaseMouseEvents(e)
-    console.log('up')
-//    }
-  }
-
-  releaseMouseEvents(e) {
-    this.restoreGlobalMouseEvents()
-    this.store.me.removeEventListener('mousemove', this.mousemoveListener, EventListenerMode)
-    document.removeEventListener('mouseup', this.mouseupListener, EventListenerMode)
-    e.stopPropagation()
+    this.store.me.removeEventListener('mouseup', this.mouseupListener, EventListenerMode)
+    console.log('up   native')
   }
 
   isGraphElement(e) {
     var el = e.target.tagName
     return el === 'circle'
-  }
-
-  preventGlobalMouseEvents() {
-    document.body.style['pointer-events'] = 'none'
-  }
-
-  restoreGlobalMouseEvents() {
-    document.body.style['pointer-events'] = 'auto'
   }
 
   componentDidMount() {
@@ -151,7 +124,8 @@ class D3Mol extends Component {
     }
     return (
       <div className='molPeri'>
-        <div className='molPane'/>
+        <div
+          className='molPane'/>
         <ResizeDetector handleWidth handleHeight onResize={this.handleResiseWrapper}/>
       </div>
     )
@@ -189,15 +163,6 @@ class D3Mol extends Component {
     var force = d3.layout.force().size([width, height]).charge(Math.ceil(-1000 * _ratio)).linkDistance(function (d) {
       return radius(d.source.size) + radius(d.target.size)
     });
-
-    var o = adjustWH({width, height})
-    width = o.width
-    height = o.height
-
-    function adjustWH(o) {
-//      o.width < o.height ?
-      return o
-    }
 
     force.nodes(this.store.graph.nodes).links(this.store.graph.links).on('tick', tick).start()
 
@@ -243,4 +208,3 @@ class D3Mol extends Component {
 
   }
 }
-export default D3MolOutsideEventContainer(D3Mol, ['mousedown', 'mouseup'])

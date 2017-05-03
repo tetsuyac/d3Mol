@@ -1,7 +1,6 @@
 import React from 'react'
 import Styles from './MolSpecs.css'
 
-var styles = Styles
 var MolSpecs = React.createClass({
   getInitialState: function () {
     return {total: 0}
@@ -14,7 +13,7 @@ var MolSpecs = React.createClass({
     var specs = this.props.items.map(function (s, i) {
       return <Service key={i} name={s.name} weight={s.weight} active={s.active} addTotal={self.addTotal}/>
     })
-    return <div id="molSpec" styles="{styles}">
+    return <div id="molSpec">
       <h1>Mol Specs</h1>
       <div id="specs">
         {specs}
