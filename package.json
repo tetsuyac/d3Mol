@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "create-react-class": "^15.5.2",
     "d3": "^3.0.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-grid-layout": "^0.14.6",
     "react-resizable": "^1.6.0",
-    "react-resize-detector": "^0.4.1",
-    "react-sizeme": "^2.3.1"
+    "react-resize-detector": "^0.4.1"
   },
   "devDependencies": {
     "react-scripts": "0.9.5"

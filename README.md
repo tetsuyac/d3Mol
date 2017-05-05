@@ -1,5 +1,6 @@
 # d3Mol - React D3 molecule
 ```
+    0.4.2  05/06 : molSeach init, ongoing
     0.4.1  05/03 : [mouse capture on graph sticks] fixed
     0.4    04/30 : window resize, Mol Specs panel init
     0.3    04/29 : mol pane resizable, hosting at guthub.io
@@ -33,7 +34,7 @@ rev 0.init 04/18/2017: mol graph
 1. **[window resize]** *react-grid-layout* Responsive is still in old way
    not supporting es6 class so, MolGrid.js is converted to es5 (createClass).
 
-1. **[graph spec string input/load]** rev0.4 panel init
+1. **[graph spec string input/load]** rev0.4 panel / search init
 
 1. **[gradual grow of graph in steps]** not yet
 

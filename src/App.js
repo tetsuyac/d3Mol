@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom'
 import MolGrid from './Components/MolGrid'
 import MolSpec from './Components/MolSpecs'
+import MolSearch from './Components/MolSearch'
 import './App.css';
 
 export default class App extends Component {
@@ -14,8 +15,9 @@ export default class App extends Component {
   render() {
     return (
       <div id="d3Mol">
-        <MolGrid/>
         <MolSpec items={this.services}/>
+        <MolSearch/>
+        <MolGrid/>
       </div>
     )
   }

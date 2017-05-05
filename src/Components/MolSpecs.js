@@ -1,7 +1,8 @@
 import React from 'react'
+import CreateReactClass from 'create-react-class'
 import Styles from './MolSpecs.css'
 
-var MolSpecs = React.createClass({
+var MolSpecs = CreateReactClass({
   getInitialState: function () {
     return {total: 0}
   },
@@ -25,7 +26,7 @@ var MolSpecs = React.createClass({
   }
 })
 
-var Service = React.createClass({
+var Service = CreateReactClass({
   getInitialState: function () {
     return {active: false}
   },

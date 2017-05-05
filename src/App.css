@@ -26,19 +26,21 @@
     display:flex;
     flex-direction:row;
 }
-#d3Mol #molGrid {
-    flex:5;
-}
 #d3Mol #molSpec {
     flex:1;
 }
+#d3Mol #molSearch {
+    flex:2;
+}
+#d3Mol #molGrid {
+    flex:8;
+}
 #root {
-    width: 99%;
     margin: 0 auto;
     margin-top:2rem;
     background-color: ghostwhite;
 }
 
-#molGrid, #molSpec {
+#molGrid, #molSpec #molSearch {
     margin:0.4rem 0 0 0;
 }
